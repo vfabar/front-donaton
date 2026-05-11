@@ -1,0 +1,75 @@
+/* Products.css */
+
+/* Alinea fila y cards y asegura que todas las cards tengan la misma altura */
+.row.products-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  align-items: stretch; /* hace que las cards tengan la misma altura */
+}
+
+/* Card: tamaño y estructura */
+.card.product-card {
+  width: 300px;               /* ancho uniforme */
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+/* Hover sutil */
+.card.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+}
+
+/* Contenedor fijo para la imagen: garantiza un recorte cuadrado/rectangular consistente */
+.card.product-card .card-img-top {
+  width: 100%;
+  height: 300px;            /* altura fija: ajusta si quieres más/menos */
+  object-fit: cover;        /* CROP: mantiene proporción y recorta los bordes */
+  object-position: center;  /* centra la parte importante de la imagen */
+  display: block;
+  background-color: #f5f5f5; /* fallback mientras carga la imagen */
+}
+
+/* Si tu componente Image no aplica la clase directamente, usa selector alternativo: */
+.card.product-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Card body: ocupa espacio restante y mantiene uniformidad */
+.card.product-card .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px;
+  background: #fff;
+  flex: 1 1 auto; /* permite que todas las cards tengan altura uniforme */
+}
+
+/* Titulo/descripcion y boton */
+.card.product-card .card-title {
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 8px;
+}
+
+.card.product-card .card-text {
+  color: #555;
+  font-size: 0.95rem;
+  min-height: 48px; /* espacio mínimo para balance visual */
+}
+
+/* Botón alineado abajo */
+.card.product-card .btn {
+  align-self: flex-start; /* o center si prefieres */
+  margin-top: 12px;
+}

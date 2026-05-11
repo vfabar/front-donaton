@@ -1,0 +1,57 @@
+.contact-container {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: #fff;
+  min-height: 100vh;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.contact-title {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.contact-description {
+  margin-bottom: 40px; 
+  font-size: 1.2rem;
+  color: #dcdcdc;
+}/*. este es para el texto de llena el formulario para contactarte*/
+
+.contact-buttons {
+  margin-top: 30px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.contact-container input,
+.contact-container textarea {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.contact-container input::placeholder,
+.contact-container textarea::placeholder {
+  color: #ccc;
+}
+
+.contact-container input:focus,
+.contact-container textarea:focus {
+  outline: none;
+  border-color: #00bcd4;
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.contact-buttons button {
+  min-width: 120px;
+  font-weight: bold;
+  border-radius: 8px;
+}
