@@ -1,94 +1,24 @@
-/* --- CONTENEDOR GENERAL --- */
 .product-detail-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  min-height: 100vh;
+    position: relative;
+    z-index: 10;
 }
 
-/* --- BOTÓN VOLVER --- */
-.product-detail-container > .btn-primary {
-  align-self: flex-start;
-  margin-bottom: 20px;
-  background-color: #007bff;
-  border: none;
-  transition: background-color 0.2s ease;
-}
-
-.product-detail-container > .btn-primary:hover {
-  background-color: #0056b3;
-}
-
-/* --- CARD --- */
 .product-detail-container .card {
-  width: 600px;
-  border-radius: 16px;
-  overflow: hidden;
-  background-color: #fff;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  margin: 0 auto;
+    background-color: white !important;
+    border-radius: 20px;
 }
 
-.product-detail-container .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+.progress {
+    height: 25px;
+    border-radius: 12px;
+    font-size: 1rem;
 }
 
-/* --- IMAGEN --- */
-.product-detail-container .card-img-top {
-  width: 100%;
-  height: 350px;
-  object-fit: cover;
-  object-position: center;
+.donation-box {
+    border: 1px solid #e0e0e0;
 }
 
-/* --- CUERPO --- */
-.product-detail-container .card-body {
-  padding: 25px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.product-detail-container .card-body h2,
-.product-detail-container .card-body h3 {
-  font-weight: 700;
-  color: #222;
-  margin-bottom: 10px;
-}
-
-.product-detail-container .card-body p {
-  font-size: 1rem;
-  color: #555;
-  line-height: 1.6;
-  margin-bottom: 10px;
-}
-
-/* --- BOTÓN DETALLES --- */
-.product-detail-container .card-body .btn-primary {
-  margin-top: 15px;
-  align-self: center;
-  padding: 10px 25px;
-  background-color: #007bff;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-}
-
-.product-detail-container .card-body .btn-primary:hover {
-  background-color: #0056b3;
-}
-
-/* --- RESPONSIVE --- */
-@media (max-width: 768px) {
-  .product-detail-container .card {
-    width: 90%;
-  }
-
-  .product-detail-container .card-img-top {
-    height: 250px;
-  }
+.donation-box input:focus {
+    border-color: #e63946;
+    box-shadow: 0 0 0 0.25rem rgba(230, 57, 70, 0.2);
 }

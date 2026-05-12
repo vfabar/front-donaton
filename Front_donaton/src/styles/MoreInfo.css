@@ -1,0 +1,93 @@
+:root {
+  --donaton-red: #e63946;
+  --donaton-green: #28a745;
+  --soft-gray: #f8f9fa;
+  --text-main: #2d3436;
+}
+
+.info-page-container {
+  background-color: #ffffff; /* Fondo principal blanco */
+  min-height: 100vh;
+  color: var(--text-main);
+}
+
+.info-hero-section {
+  background-color: var(--soft-gray);
+  padding: 80px 0 60px 0;
+  border-bottom: 2px solid #eee;
+}
+
+.info-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--donaton-red); /* Título en rojo marca */
+  margin-bottom: 15px;
+}
+
+.info-subtitle {
+  font-size: 1.25rem;
+  color: #636e72;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.info-card {
+  background: white;
+  border-left: 5px solid var(--donaton-green);
+  border-radius: 10px;
+}
+
+.contact-form-box {
+  background: white;
+  border-radius: 15px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Estilo para los inputs del formulario (sobreescribiendo el estilo oscuro previo) */
+.contact-form-box input, 
+.contact-form-box textarea {
+  background-color: #ffffff !important;
+  color: #333 !important;
+  border: 1px solid #ced4da !important;
+  padding: 12px !important;
+  transition: border-color 0.3s shadow 0.3s;
+}
+
+.contact-form-box input:focus, 
+.contact-form-box textarea:focus {
+  border-color: var(--donaton-green) !important;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+  outline: none;
+}
+
+.contact-form-box label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #444;
+  display: block;
+  text-align: left;
+}
+
+/* Botones personalizados */
+.btn-success {
+  background-color: var(--donaton-green) !important;
+  border: none;
+  font-weight: bold;
+}
+
+.btn-outline-danger {
+  color: var(--donaton-red);
+  border-color: var(--donaton-red);
+}
+
+.btn-outline-danger:hover {
+  background-color: var(--donaton-red);
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .info-title {
+    font-size: 2.2rem;
+  }
+}

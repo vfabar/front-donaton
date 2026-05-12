@@ -10,6 +10,9 @@ import Products from './pages/Products'; // En este caso serían las causas o ca
 import ProductDetail from './pages/ProductDetail';
 import MoreInfo from './pages/MoreInfo';
 import NotFound from './pages/NotFound';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Profile from './pages/Profile.jsx';
 
 // Estilos globales
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -20,6 +23,7 @@ function App() {
     /* Usamos el Template MainLayout para que el Navbar 
        y el Footer aparezcan automáticamente en todas las páginas */
     <MainLayout>
+      <div className="diagonal-bg"></div>
       <Routes>
         {/* Inicio: Landing page de la fundación */}
         <Route path="/" element={<Home />} />
@@ -27,6 +31,9 @@ function App() {
         {/* Proyectos de donación (Causas) */}
         <Route path="/Products" element={<Products />} />
         <Route path="/Products/:id" element={<ProductDetail />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} /> 
+        <Route path="/profile" element={<Profile />} />
       
         {/* Contacto y error */}
         <Route path="/MoreInfo" element={<MoreInfo />} />

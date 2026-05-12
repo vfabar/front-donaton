@@ -1,0 +1,53 @@
+.custom-navbar {
+    background-color: rgba(255, 255, 255, 0.95) !important; /* Blanco con ligera transparencia */
+    padding: 15px 0;
+    border-bottom: 3px solid #e63946; /* Línea roja delgada abajo */
+}
+
+.brand-logo {
+    color: #e63946 !important;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: #333 !important;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #28a745 !important; /* Verde al pasar el mouse */
+}
+
+/* Estilo específico para Iniciar Sesión */
+.login-link {
+    margin-right: 15px;
+}
+
+/* Botón de Registro en el Nav */
+.register-btn-nav {
+    background-color: #28a745;
+    color: rgb(0, 0, 0) !important;
+    border-radius: 8px;
+    padding: 8px 20px !important;
+    transition: background 0.3s;
+}
+
+.register-btn-nav:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+/* Ajuste para móviles */
+@media (max-width: 991px) {
+    .ms-auto {
+        margin-top: 15px;
+        border-top: 1px solid #eee;
+        padding-top: 10px;
+    }
+    .register-btn-nav {
+        display: inline-block;
+        text-align: center;
+        width: 150px;
+    }
+}

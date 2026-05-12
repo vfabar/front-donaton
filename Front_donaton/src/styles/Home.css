@@ -1,41 +1,64 @@
 :root {
-  --primary-color: #28a745; /* Un verde que evoca esperanza/donación */
+  --primary-color: #28a745; 
   --text-dark: #333;
 }
 
 .home-container {
-  min-height: 70vh;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.home-hero-img {
-  max-height: 450px;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.home-hero-img:hover {
-  transform: scale(1.02);
+.home-container .row {
+  width: 100%;
+  margin: 0;
 }
 
 .mission-box {
-  background-color: #f8f9fa;
-  border-left: 5px solid var(--primary-color);
-  border-radius: 8px;
+  background-color: #ffffff;
+  border-top: 5px solid var(--primary-color); /* Cambié a borde superior para variar */
+  border-radius: 12px;
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+/* Si usas gap-3 en el div de botones, esto ayuda a que no se peguen */
+.gap-3 {
+  gap: 1rem !important;
+}
+
+/* Forzamos que todo el contenido de home esté al frente */
+.home-main-wrapper {
+  position: relative;
+  z-index: 10; /* Un número alto para asegurar que esté sobre la diagonal de App.css */
+}
+
+/* El cuadro blanco del logo */
+.logo-container-white {
+  background-color: white;
+  padding: 20px;
+  border-radius: 15px;
+  display: inline-block;
+  position: relative;
+  z-index: 20; /* Más alto que la diagonal */
+}
+
+/* La tarjeta de la misión */
+.mission-white-card {
+  background-color: white !important; /* Fondo blanco sólido para tapar el rojo */
+  border-radius: 20px;
+  border-top: 8px solid #28a745; /* Línea verde superior */
+  position: relative;
+  z-index: 20;
   max-width: 800px;
   margin: 0 auto;
 }
 
-h1 {
-  color: var(--text-dark);
-  line-height: 1.2;
-}
-
-/* Ajustes para móviles */
-@media (max-width: 768px) {
-  .home-container {
-    text-align: center;
-  }
-  .home-hero-img {
-    margin-top: 2rem;
-  }
+/* Aseguramos que el texto del hero sea legible si toca la diagonal */
+.hero-text-column {
+    position: relative;
+    z-index: 25;
 }

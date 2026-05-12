@@ -182,3 +182,44 @@
     border-right-color: var(--border);
   }
 }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden; /* Evita el scroll horizontal innecesario */
+}
+
+#root {
+  width: 100%;
+}
+/* App.css */
+
+/* App.css */
+.diagonal-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* Esto lo manda al fondo de todo */
+  background: linear-gradient(150deg, #ffffff 50%, #e63946 50%);
+  pointer-events: none; /* Para que no interfiera con los clics */
+}
+
+/* Forzamos transparencia en los elementos principales */
+body, #root, main, .container, .container-fluid {
+  background-color: transparent !important;
+}
+
+/* App.css */
+.diagonal-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* OBLIGATORIO: Menor que el contenido */
+  background: linear-gradient(150deg, #ffffff 50%, #e63946 50%);
+  pointer-events: none;
+}
