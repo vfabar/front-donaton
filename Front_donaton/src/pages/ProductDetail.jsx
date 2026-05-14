@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Card, ProgressBar, Form, Row, Col, Spinner, Badge, Alert } from 'react-bootstrap';import { useParams, useNavigate } from 'react-router-dom';
-import needsApi from '../api/objects/needs'; // Importamos la API de necesidades
+import { Container, Card, ProgressBar, Form, Row, Col, Spinner, Badge, Alert } from 'react-bootstrap';
+import { useParams, useNavigate } from 'react-router-dom';
+import needsApi from '../api/objects/needs'; 
+import donationApi from '../api/objects/donation'; // Usamos la API real
 import Image from '../components/atoms/Image.jsx';
 import Text from '../components/atoms/Text.jsx';
 import Button from '../components/atoms/Button.jsx';
-import "../styles/ProductDetail.css";
 
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [cantidad, setCantidad] = useState(1);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   
+  // Estados para el formulario de donación
+  const [cantidad, setCantidad] = useState(1);
+  const [tipoDonacion, setTipoDonacion] = useState("Monetario");
+  const [detalleObjeto, setDetalleObjeto] = useState("");
+
   const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
@@ -26,116 +31,99 @@ function ProductDetail() {
         setLoading(false);
       }
     };
-    fetchProduct(id);
+    fetchProduct();
   }, [id]);
 
-  if (loading) return (
-    <Container className="text-center py-5">
-      <Spinner animation="border" variant="success" />
-    </Container>
-  );
-
-  if (!product) return <Container className="py-5"><h1>Causa no encontrada</h1></Container>;
-
-  // --- LÓGICA DE PROGRESO (Simulada con datos del ID ya que la API no trae metas) ---
-  const meta = 1000 + (product.idNeeds * 100); // Meta dinámica basada en ID
-  const actual = product.idNeedsState.idNeedsState === 2 ? meta : 450 + (product.idNeeds * 50); 
-  const porcentaje = Math.round((actual / meta) * 100);
-
-  // Imagen según tipo (misma lógica que en la Card)
-  const images = {
-    'Salud': 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800',
-    'Refugio': 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?q=80&w=800',
-    'Comida': 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800',
-    'Ropa': 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=800'
-  };
-  const productImg = images[product.idNeedsType.needsType] || 'https://images.unsplash.com/photo-1469571480357-0a8a01699b04?q=80&w=800';
-
-  const handleDonar = () => {
+  const handleDonar = async () => {
     if (!user) {
-      alert("Debes iniciar sesión para donar");
+      alert("Inicia sesión para donar");
       navigate('/login');
       return;
     }
 
-    const nuevaDonacion = {
-      id: Date.now(),
-      causa: product.needs,
-      cantidad: cantidad,
-      fecha: new Date().toLocaleDateString()
+    // Estructura para enviar al POST de la API
+    const dataDonacion = {
+      date: new Date().toISOString(),
+      amount: parseInt(cantidad),
+      // Si es objeto, concatenamos el nombre del objeto en el detalle o tipo
+      idDonationType: { 
+        idDonationType: tipoDonacion === "Monetario" ? 1 : 2, 
+        donationType: tipoDonacion === "Objeto" ? `Objeto: ${detalleObjeto}` : "Monetario"
+      },
+      idDonationState: { idDonationState: 1 }, // "En camino"
+      idUser: { idUser: user.idUser }
     };
 
-    const updatedUser = { 
-        ...user, 
-        vidasAyudadas: (user.vidasAyudadas || 0) + parseInt(cantidad),
-        historial: [nuevaDonacion, ...(user.historial || [])]
-    };
-
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-    alert(`¡Gracias! Has donado ${cantidad} a: ${product.needs}`);
-    navigate('/profile');
+    try {
+      await donationApi.create(dataDonacion);
+      alert(`¡Gracias! Donación de ${tipoDonacion} registrada.`);
+      navigate('/profile');
+    } catch (error) {
+      console.error("Error al donar:", error);
+      alert("Error al procesar la donación.");
+    }
   };
 
+  if (loading) return <Container className="text-center py-5"><Spinner animation="border" variant="success" /></Container>;
+  if (!product) return <Container className="py-5"><h1>Causa no encontrada</h1></Container>;
+
+  // Lógica de progreso y Bloqueo
+  const meta = 1000 + (product.idNeeds * 100); 
+  const actual = product.idNeedsState.idNeedsState === 2 ? meta : 450 + (product.idNeeds * 50); 
+  const porcentaje = Math.round((actual / meta) * 100);
+  const estaSuperada = product.idNeedsState.idNeedsState === 2;
+
   return (
-    <Container className="product-detail-container py-5">
-      <Button variant="outline-dark" className="mb-4" onClick={() => navigate(`/products`)}>
-        ← Volver a Causas
-      </Button>
-      
+    <Container className="py-5">
+      <Button variant="outline-dark" className="mb-4" onClick={() => navigate(-1)}>← Volver</Button>
       <Card className="border-0 shadow-lg overflow-hidden">
         <Row className="g-0">
           <Col md={6}>
-            <Image src={productImg} alt={product.needs} className="img-fluid h-100" style={{objectFit: 'cover'}} />
+            <Image src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800" className="img-fluid h-100" style={{objectFit: 'cover'}} />
           </Col>
           <Col md={6}>
             <Card.Body className="p-4">
-              <div className="mb-2">
-                <Badge bg="success" className="me-2">{product.idNeedsType.needsType}</Badge>
-                <Badge bg={product.idNeedsState.idNeedsState === 2 ? "info" : "warning"} text="dark">
-                  {product.idNeedsState.needsState}
-                </Badge>
-              </div>
+              <Badge bg="success" className="me-2">{product.idNeedsType.needsType}</Badge>
+              <Badge bg={estaSuperada ? "info" : "warning"} text="dark">
+                {product.idNeedsState.needsState}
+              </Badge>
 
-              <Text variant="h2" className="fw-bold text-success">{product.needs}</Text>
-              
-              <div className="location-info mb-4 p-2 bg-light rounded">
-                <small className="text-muted d-block">Ubicación de la necesidad:</small>
-                <strong>{product.idUbication.street}</strong><br/>
-                <span>{product.idUbication.idDistric.distric}, {product.idUbication.idDistric.idRegion.region}</span>
-              </div>
+              <Text variant="h2" className="fw-bold mt-2 text-success">{product.needs}</Text>
               
               <div className="meta-section my-4">
-                <div className="d-flex justify-content-between mb-1">
-                  <span>Progreso de la meta</span>
-                  <span className="fw-bold">{porcentaje}%</span>
-                </div>
-                <ProgressBar 
-                  variant={porcentaje === 100 ? "info" : "success"} 
-                  now={porcentaje} 
-                  label={`${porcentaje}%`} 
-                  animated={porcentaje < 100} 
-                />
+                <ProgressBar variant={estaSuperada ? "info" : "success"} now={porcentaje} label={`${porcentaje}%`} animated={!estaSuperada} />
                 <small className="text-muted">Meta: {meta} unidades / Recolectado: {actual}</small>
               </div>
 
-              {product.idNeedsState.idNeedsState !== 2 ? (
-                <div className="donation-box p-3 border rounded">
+              {/* LÓGICA DE BLOQUEO */}
+              {!estaSuperada ? (
+                <div className="donation-box p-3 border rounded bg-light">
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">Cantidad a donar (Suministros o Unidades)</Form.Label>
-                    <Form.Control 
-                      type="number" 
-                      min="1" 
-                      value={cantidad} 
-                      onChange={(e) => setCantidad(e.target.value)}
-                    />
+                    <Form.Label className="fw-bold">¿Qué deseas donar?</Form.Label>
+                    <Form.Select value={tipoDonacion} onChange={(e) => setTipoDonacion(e.target.value)}>
+                      <option value="Monetario">Dinero (CLP)</option>
+                      <option value="Objeto">Objeto / Insumo</option>
+                    </Form.Select>
                   </Form.Group>
-                  <Button variant="danger" className="w-100 py-2 fw-bold" onClick={handleDonar}>
-                    ¡Donar Ahora!
-                  </Button>
+
+                  {tipoDonacion === "Objeto" && (
+                    <Form.Group className="mb-3">
+                      <Form.Label>¿Qué objeto es? (Ej: Manta, Botiquín)</Form.Label>
+                      <Form.Control type="text" placeholder="Nombre del objeto" value={detalleObjeto} onChange={(e) => setDetalleObjeto(e.target.value)} />
+                    </Form.Group>
+                  )}
+
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-bold">Cantidad</Form.Label>
+                    <Form.Control type="number" min="1" value={cantidad} onChange={(e) => setCantidad(e.target.value)} />
+                  </Form.Group>
+
+                  <Button variant="danger" className="w-100 py-2 fw-bold" onClick={handleDonar}>Confirmar Donación</Button>
                 </div>
               ) : (
-                <Alert variant="info" className="text-center fw-bold">
-                  ¡Esta meta ha sido superada! Gracias a todos.
+                <Alert variant="info" className="text-center fw-bold py-4">
+                  🔒 ESTA CAUSA HA SIDO SUPERADA <br/>
+                  <small>No se aceptan más donaciones por el momento. ¡Gracias!</small>
                 </Alert>
               )}
             </Card.Body>

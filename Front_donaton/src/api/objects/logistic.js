@@ -1,11 +1,11 @@
 import { logisticaApi } from "../base";
 const logistic = {
     getAll: async () => {
-        const response = await logisticaApi.get('/logisitc'); // Corregido el typo que pusiste: logisitc
+        const response = await logisticaApi.get('/logistic'); // Corregido el typo que pusiste: logisitc
         return response.data;
     },
     getById: async (id) => {
-        const response = await logisticaApi.get(`/logisitc/${id}`);
+        const response = await logisticaApi.get(`/logistic/${id}`);
         return response.data;
     }
 };
