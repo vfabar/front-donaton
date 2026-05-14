@@ -3,7 +3,7 @@ import { Container, Row, Col, Alert } from 'react-bootstrap';
 import Text from '../components/atoms/Text.jsx';
 import DynamicForm from '../components/molecules/DynamicForm.jsx';
 import Button from '../components/atoms/Button.jsx';
-import "../styles/MoreInfo.css"; // Sugiero renombrar a MoreInfo.css luego
+import "../styles/MoreInfo.css";
 
 function MoreInfo() {
     const initialFormData = {
@@ -22,6 +22,7 @@ function MoreInfo() {
             placeholder: 'Ej. Juan Pérez',
             value: formData.name,
             onChange: (e) => setFormData({ ...formData, name: e.target.value }),
+            required: true // Atributo para el HTML
         },
         {
             id: 'email',
@@ -30,6 +31,7 @@ function MoreInfo() {
             placeholder: 'tu@email.com',
             value: formData.email,
             onChange: (e) => setFormData({ ...formData, email: e.target.value }),
+            required: true
         },
         {
             id: 'mensaje',
@@ -39,16 +41,34 @@ function MoreInfo() {
             rows: 4,
             value: formData.mensaje,
             onChange: (e) => setFormData({ ...formData, mensaje: e.target.value }),
+            required: true
         },
     ];
 
     const handleSubmit = () => {
+        // --- VALIDACIONES ---
+        const { name, email, mensaje } = formData;
+        
+        // Verificar que no haya campos vacíos
+        if (!name.trim() || !email.trim() || !mensaje.trim()) {
+            alert("Por favor, rellena todos los campos antes de enviar.");
+            return;
+        }
+
+        // Validación básica de email (@ y punto)
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("Por favor, ingresa un correo electrónico válido.");
+            return;
+        }
+
+        // Si pasa las validaciones
         alert("Gracias por contactarnos. Nuestro equipo técnico revisará tu caso a la brevedad.");
+        setFormData(initialFormData); // Limpia después de enviar
     };
 
     return (
         <Container fluid className="info-page-container px-0 position-relative" style={{ zIndex: 1 }}>
-            {/* Sección de Texto Informativo */}
             <div className="info-hero-section text-center">
                 <Container>
                     <Text variant="h1" className="info-title">Sobre Donatón</Text>
@@ -74,7 +94,8 @@ function MoreInfo() {
                         </Text>
                         <div className="mt-4 d-flex justify-content-around text-center">
                             <div><h4 className="text-danger">100%</h4><p>Transparente</p></div>
-                            <div><h4 className="text-danger">+50</h4><p>Causas Activas</p></div>
+                            {/* CAMBIO: Causas completadas */}
+                            <div><h4 className="text-danger">+150</h4><p>Causas Completadas</p></div>
                             <div><h4 className="text-danger">Directo</h4><p>Sin Intermediarios</p></div>
                         </div>
                     </div>

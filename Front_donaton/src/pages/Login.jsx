@@ -1,23 +1,37 @@
 import React, { useState } from 'react';
-import { Container, Form, Button, Card } from 'react-bootstrap';
+import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
-import { users } from '../data/Users';
+import userApi from '../api/objects/user'; // Importamos nuestro objeto de la API
 import "../styles/Auth.css";
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(null); // Para mostrar errores de la API
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        const user = users.find(u => u.email === email && u.password === password);
-        
-        if (user) {
-            localStorage.setItem('user', JSON.stringify(user)); // <--- GUARDAR SESIÓN
-            navigate('/profile'); 
-        } else {
-            alert("Error...");
+        setError(null);
+
+        try {
+            // 1. Obtenemos todos los usuarios de la API (Logística por defecto)
+            const allUsers = await userApi.getAll();
+            
+            // 2. Buscamos el usuario que coincida
+            const foundUser = allUsers.find(u => u.email === email && u.password === password);
+            
+            if (foundUser) {
+                // Guardamos el objeto tal cual viene del Back
+                // Viene con: idUser, email, password, idUserType { idUserType, userType }
+                localStorage.setItem('user', JSON.stringify(foundUser));
+                navigate('/profile');
+            } else {
+                setError("Credenciales incorrectas. Inténtalo de nuevo.");
+            }
+        } catch (err) {
+            console.error("Error en el login:", err);
+            setError("No se pudo conectar con el servidor.");
         }
     };
 
@@ -26,6 +40,9 @@ function Login() {
             <Card className="auth-card shadow-lg p-4">
                 <Card.Body>
                     <h2 className="text-center mb-4 auth-title">Iniciar Sesión</h2>
+                    
+                    {error && <Alert variant="danger">{error}</Alert>}
+
                     <Form onSubmit={handleLogin}>
                         <Form.Group className="mb-3">
                             <Form.Label>Correo electrónico</Form.Label>

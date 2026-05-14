@@ -28,7 +28,7 @@ function NavBar() {
           <Nav className="ms-auto auth-nav">
             {user ? (
               /* Si hay usuario, mostramos el Menú de Perfil */
-              <NavDropdown title={`Hola, ${user.name}`} id="basic-nav-dropdown" className="profile-dropdown">
+              <NavDropdown title={`Opciones de perfil`} id="basic-nav-dropdown" className="profile-dropdown">
                 <NavDropdown.Item as={Link} to="/profile">Mi Perfil</NavDropdown.Item>
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={handleLogout} className="text-danger">
