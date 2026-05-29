@@ -13,7 +13,7 @@ import NotFound from './pages/NotFound';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile.jsx';
-
+import CheckoutPayment from './pages/CheckoutPayment';
 // Estilos globales
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'; 
@@ -34,7 +34,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} /> 
         <Route path="/profile" element={<Profile />} />
-      
+        <Route path="/checkout-payment" element={<CheckoutPayment />} />  
         {/* Contacto y error */}
         <Route path="/MoreInfo" element={<MoreInfo />} />
         <Route path="*" element={<NotFound />} />

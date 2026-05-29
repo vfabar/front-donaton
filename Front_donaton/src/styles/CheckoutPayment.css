@@ -1,0 +1,28 @@
+/* CheckoutPayment.css */
+
+/* 1. Forzar estilos limpios en los inputs normales de esta vista */
+.checkout-form .form-control {
+  background-color: #ffffff !important;
+  color: #212529 !important; /* Texto oscuro */
+  border: 1px solid #ced4da;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* 2. El truco maestro: Neutralizar el horrible fondo gris/blanco del Autofill del navegador */
+.checkout-form .form-control:-webkit-autofill,
+.checkout-form .form-control:-webkit-autofill:hover, 
+.checkout-form .form-control:-webkit-autofill:focus, 
+.checkout-form .form-control:-webkit-autofill:active {
+  /* Reemplaza el fondo de autocompletado por un color blanco plano */
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  /* Mantiene el texto oscuro original de Bootstrap */
+  -webkit-text-fill-color: #212529 !important;
+  box-shadow: 0 0 0 30px white inset !important;
+}
+
+/* 3. Evitar que al deshabilitarse por estar 'procesando' se rompa el esquema */
+.checkout-form .form-control:disabled {
+  background-color: #e9ecef !important;
+  color: #6c757d !important;
+  -webkit-text-fill-color: #6c757d !important;
+}

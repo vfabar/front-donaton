@@ -7,6 +7,20 @@ import Image from '../components/atoms/Image.jsx';
 import Text from '../components/atoms/Text.jsx';
 import Button from '../components/atoms/Button.jsx';
 
+// 1. Definimos la función de imágenes fuera del componente (o puedes importarla si la modularizas)
+const getPlaceholderImage = (type) => {
+  const images = {
+    'Comida': 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800',
+    'Salud': 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800',
+    'Refugio': 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?q=80&w=800',
+    'Ropa': 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=800',
+    'Agua e Higiene': 'https://cospec.com.ar/wp-content/uploads/2022/03/Dia-mundial-del-agua_-22-de-marzo-de-2022.jpg'
+  };
+  
+  return images[type] || 'https://img.magnific.com/foto-gratis/turistas-suben-colina-al-amanecer_1150-19692.jpg?semt=ais_hybrid&w=800&q=80';
+};
+
+
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -53,7 +67,14 @@ function ProductDetail() {
       idDonationState: { idDonationState: 1 }, // "En camino"
       idUser: { idUser: user.idUser }
     };
-
+    if (tipoDonacion === "Monetario") {
+      navigate('/checkout-payment', { 
+        state: { 
+          donationData: dataDonacion,
+          productName: product.needs 
+        } 
+      });
+    } else {
     try {
       await donationApi.create(dataDonacion);
       alert(`¡Gracias! Donación de ${tipoDonacion} registrada.`);
@@ -61,6 +82,7 @@ function ProductDetail() {
     } catch (error) {
       console.error("Error al donar:", error);
       alert("Error al procesar la donación.");
+      }
     }
   };
 
@@ -73,13 +95,16 @@ function ProductDetail() {
   const porcentaje = Math.round((actual / meta) * 100);
   const estaSuperada = product.idNeedsState.idNeedsState === 2;
 
+  const type = product.idNeedsType?.needsType || 'General';
+  const cardImage = product.image || getPlaceholderImage(type);
+
   return (
     <Container className="py-5">
       <Button variant="outline-dark" className="mb-4" onClick={() => navigate(-1)}>← Volver</Button>
       <Card className="border-0 shadow-lg overflow-hidden">
         <Row className="g-0">
           <Col md={6}>
-            <Image src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800" className="img-fluid h-100" style={{objectFit: 'cover'}} />
+            <Image src={cardImage} alt={product.needs} className="img-fluid h-100" style={{objectFit: 'cover'}} />
           </Col>
           <Col md={6}>
             <Card.Body className="p-4">
@@ -122,7 +147,7 @@ function ProductDetail() {
                 </div>
               ) : (
                 <Alert variant="info" className="text-center fw-bold py-4">
-                  🔒 ESTA CAUSA HA SIDO SUPERADA <br/>
+                  ESTA CAUSA HA SIDO SUPERADA <br/>
                   <small>No se aceptan más donaciones por el momento. ¡Gracias!</small>
                 </Alert>
               )}
