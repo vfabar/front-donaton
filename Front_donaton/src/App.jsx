@@ -14,6 +14,12 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile.jsx';
 import CheckoutPayment from './pages/CheckoutPayment';
+import AdminUsers from './pages/AdminUsers.jsx';
+import AdminUserDetail from './pages/AdminUserDetail.jsx';
+import DonationManagement from './pages/DonationManagement.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import DashboardDetail from './pages/DashboardDetail.jsx';
+
 // Estilos globales
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'; 
@@ -35,6 +41,14 @@ function App() {
         <Route path="/register" element={<Register />} /> 
         <Route path="/profile" element={<Profile />} />
         <Route path="/checkout-payment" element={<CheckoutPayment />} />  
+
+        {/*admin*/}
+        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/users/:id" element={<AdminUserDetail />} />
+        <Route path="/admin/DonationManagement" element={<DonationManagement />} />
+        <Route path="/admin/dashboard" element={<Dashboard />} />
+        <Route path="/admin/dashboard/:id" element={<DashboardDetail />} />
+
         {/* Contacto y error */}
         <Route path="/MoreInfo" element={<MoreInfo />} />
         <Route path="*" element={<NotFound />} />

@@ -3,14 +3,14 @@ import { Container } from 'react-bootstrap';
 import Image from '../components/atoms/Image';
 
 const image = {
-    src: 'https://pm1.aminoapps.com/7827/fcf7a54ee21f7e9a3740da86e2dce8bd684ed4b8r1-1200-1353v2_uhq.jpg',
-    alt: 'esta pagina es invisible',
+    src: 'https://img.magnific.com/vector-gratis/pagina-error-404-distorsion_23-2148105404.jpg?semt=ais_hybrid&w=740&q=80',
+    alt: 'esta pagina no existe',
 }
 
 function NotFound() {
   return (
     <Container className="my-5">
-      <h1>esta pagina es invisible</h1>
+      <h1>esta pagina no existe</h1>
       <p>¿Estás seguro de que era aquí?</p>
       
       <Image src={image.src} alt={image.alt} className="" />
