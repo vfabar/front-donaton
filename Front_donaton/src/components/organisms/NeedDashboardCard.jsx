@@ -12,12 +12,12 @@ function NeedDashboardCard({ need }) {
           </Card.Title>
           <Badge
             bg={
-              need.idNeedsState.idNeedsState === 1
+              need.NeedsState.idNeedsState === 1
                 ? "warning"
                 : "success"
             }
           >
-            {need.idNeedsState.needsState}
+            {need.NeedsState.needsState}
           </Badge>
           <hr />
           <Button

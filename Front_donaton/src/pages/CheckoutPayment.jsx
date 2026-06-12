@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Card, Form, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
 import donationApi from '../api/objects/donation'; 
+import logisticApi from '../api/objects/logistic';
 import Button from '../components/atoms/Button.jsx';
 import Text from '../components/atoms/Text.jsx';
 import '../styles/CheckoutPayment.css'; 
@@ -10,8 +11,9 @@ function CheckoutPayment() {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Recuperamos la data enviada desde el detalle
-  const { donationData, productName } = location.state || {};
+  // Recuperamos la data completa enviada desde el detalle (donationData, productName e idNeeds)
+  // NOTA: Para que funcione al 100%, asegúrate de que en ProductDetail.jsx pasaras el objeto "product" completo en lugar de solo el ID.
+  const { donationData, productName, idNeeds } = location.state || {};
 
   // Estados del formulario de tarjeta
   const [tarjeta, setTarjeta] = useState({
@@ -38,10 +40,8 @@ function CheckoutPayment() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Validaciones en tiempo real simples (ej: limitar largo de caracteres)
-    // Marcara simple para la Fecha de Expiración (añade el '/' automáticamente)
     if (name === 'expiracion') {
-      let cleaned = value.replace(/\D/g, ''); // Solo números
+      let cleaned = value.replace(/\D/g, ''); 
       if (cleaned.length > 4) return;
       if (cleaned.length > 2) {
         cleaned = `${cleaned.slice(0, 2)}/${cleaned.slice(2)}`;
@@ -49,61 +49,92 @@ function CheckoutPayment() {
       setTarjeta({ ...tarjeta, [name]: cleaned });
       return;
     }
-    // Limitaciones de longitud para evitar exceso de caracteres
     if (name === 'numero' && value.length > 16) return;
     if (name === 'cvv' && value.length > 4) return;
 
     setTarjeta({ ...tarjeta, [name]: value });
-    };
+  };
 
   const handlePagar = async (e) => {
     e.preventDefault();
     setError(null);
 
-    // validacion de campos
+    // Validación de campos de la tarjeta
     if (tarjeta.numero.length !== 16) {
       setError("El número de tarjeta debe tener exactamente 16 dígitos.");
       return;
     }
-
-    // Validar formato MM/AA básico
     const regexExpiracion = /^(0[1-9]|1[0-2])\/?([0-9]{2})$/;
     if (!regexExpiracion.test(tarjeta.expiracion)) {
       setError("La fecha de expiración no es válida. Use el formato MM/AA (Ej: 12/28).");
       return;
     }
-
     if (tarjeta.cvv.length < 3 || tarjeta.cvv.length > 4) {
       setError("El código CVV debe tener 3 o 4 dígitos.");
       return;
     }
-
     if (tarjeta.nombre.trim().length < 5) {
       setError("Por favor, ingrese el nombre completo del titular.");
       return;
     }
 
-    // Si pasa las validaciones, procesamos el pago simulado
     setProcesando(true);
 
     try {
-      // 1. Simulamos retraso de pasarela de pago (Transbank / Stripe) de 2 segundos
+      // 1. Simulamos retraso de pasarela de pago
       await new Promise((resolve) => setTimeout(resolve, 2500));
 
-      // 2. Si el pago "se aprueba" en la simulación, impactamos tu API real
-      await donationApi.create(donationData);
+      // 2. Crear donación en Spring Boot
+      const respuestaDonacion = await donationApi.create(donationData);
+      
+      // Manejamos si la respuesta viene directa o envuelta en .data de Axios
+      const donacionCreada = respuestaDonacion?.data || respuestaDonacion;
 
-      alert(`¡Pago Exitoso! Tu donación de $${donationData.amount} CLP ha sido recibida.`);
-      navigate('/profile'); // Redirección al perfil
+      console.log("Donación creada exitosamente:", donacionCreada);
+
+      // 3. ENLAZAR AUTOMÁTICAMENTE EN LOGÍSTICA (Siguiendo tu script de ejemplo exacto)
+      if (donacionCreada && idNeeds) {
+        
+        // Replicamos la estructura exacta que Spring Boot aceptó en tu script
+        const dataLogistica = {
+          idDonation: {
+            idDonation: donacionCreada.idDonation,
+            date: donacionCreada.date,
+            amount: donacionCreada.amount,
+            idDonationType: { idDonationType: donacionCreada.idDonationType?.idDonationType || donationData.idDonationType?.idDonationType },
+            idDonationState: { idDonationState: donacionCreada.idDonationState?.idDonationState || 1 },
+            idUser: { idUser: donacionCreada.idUser?.idUser || donationData.idUser?.idUser }
+          },
+          idNeeds: {
+            idNeeds: idNeeds.idNeeds || idNeeds, // Soporta si pasaste el número o el objeto product entero
+            needs: idNeeds.needs || productName,
+            idNeedsState: { idNeedsState: idNeeds.id_needs_state || idNeeds.idNeedsState?.idNeedsState || 1 },
+            idNeedsType: { idNeedsType: idNeeds.id_needs_type || idNeeds.idNeedsType?.idNeedsType || 1 },
+            idUbication: { idUbication: idNeeds.id_ubication || idNeeds.idUbication?.idUbication || 1 }
+          }
+        };
+
+        console.log("Enviando JSON estructurado a Logística:", dataLogistica);
+        
+        // Enviamos a la API de logística
+        await logisticApi.create(dataLogistica);
+        
+      } else {
+        console.warn("No se pudo enlazar en logística. Faltan datos críticos.", { donacionCreada, idNeeds });
+      }
+
+      alert(`¡Pago Exitoso! Tu donación de $${donationData.amount.toLocaleString('es-CL')} CLP ha sido registrada.`);
+      navigate('/profile'); 
+
     } catch (err) {
-      console.error("Error al procesar el pago o guardar en API:", err);
+      console.error("Error al procesar el pago o guardar en la API:", err);
       setError("Hubo un problema al procesar la transacción. Inténtalo de nuevo.");
     } finally {
       setProcesando(false);
     }
   };
 
-return (
+  return (
     <Container className="py-5 d-flex justify-content-center">
       <Card className="shadow-lg p-4 border-0" style={{ maxWidth: '550px', width: '100%' }}>
         <Card.Body>
@@ -149,12 +180,9 @@ return (
               </Col>
             </Row>
 
-            {/* Número de Tarjeta con badge dinámico */}
+            {/* Número de Tarjeta */}
             <Form.Group className="mb-3">
-              <div className="d-flex justify-content-between align-items-center mb-1">
-                <Form.Label className="fw-bold small mb-0">Número de Tarjeta</Form.Label>
-
-              </div>
+              <Form.Label className="fw-bold small mb-0">Número de Tarjeta</Form.Label>
               <Form.Control 
                 type="number" 
                 name="numero"
@@ -165,7 +193,7 @@ return (
                 disabled={procesando}
               />
               <Form.Text className="text-muted overhead small">
-            credito, debito o prepago. Sin espacios ni guiones.
+                crédito, débito o prepago. Sin espacios ni guiones.
               </Form.Text>
             </Form.Group>
 
@@ -181,7 +209,6 @@ return (
                 onChange={handleChange}
                 required
                 disabled={procesando}
-                
               />
             </Form.Group>
 

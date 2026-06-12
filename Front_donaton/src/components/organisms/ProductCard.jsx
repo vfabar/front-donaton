@@ -14,7 +14,7 @@ const getPlaceholderImage = (type) => {
   
   const images = {
     'Comida': 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=400',
-    'Salud': 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=400',
+    'Salud': 'https://www.tubotiquin.cl/cdn/shop/articles/que-debe-tener-un-botiquin-de-primeros-auxilios_592e319d-c15b-4ad0-b408-ff0e87020015.webp?v=1780536762',
     'Refugio': 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?q=80&w=400',
     'Ropa': 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=400',
     'Agua e Higiene': 'https://cospec.com.ar/wp-content/uploads/2022/03/Dia-mundial-del-agua_-22-de-marzo-de-2022.jpg'
@@ -26,8 +26,13 @@ const getPlaceholderImage = (type) => {
 
   // 2. Extraemos los datos del JSON anidado de tu API
   const title = product.needs; // En la API es "needs" no "name"
-  const type = product.idNeedsType?.needsType || 'General';
-  const location = `${product.idUbication?.idDistric?.distric}, ${product.idUbication?.idDistric?.idRegion?.region}`;
+  const type = product.NeedsType?.needsType || 'General';
+
+// Usamos "Ubication", "Distric" y "Region" (ojo con la falta de la 't' final en Distric según tu JSON)
+  const districtName = product.Ubication?.Distric?.distric || 'Dirección no especificada';
+  const regionName = product.Ubication?.Distric?.Region?.region || '';
+  const location = regionName ? `${districtName}, ${regionName}` : districtName;
+  
   const state = product.idNeedsState?.needsState;
   
   // Construimos una descripción dinámica ya que la API no trae el campo "description"

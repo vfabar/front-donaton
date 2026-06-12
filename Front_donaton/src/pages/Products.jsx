@@ -34,9 +34,8 @@ function Products() {
   }
 
   // Separamos las necesidades por estado
-  // idNeedsState === 2 es "Superada" según tu JSON
-  const enProgreso = needs.filter(item => item.idNeedsState.idNeedsState === 1);
-  const superadas = needs.filter(item => item.idNeedsState.idNeedsState === 2);
+  const enProgreso = needs.filter(item => item.id_needs_state === 1);
+  const superadas = needs.filter(item => item.id_needs_state === 2);
 
   return (
     <Container className="my-5">

@@ -19,6 +19,7 @@ import AdminUserDetail from './pages/AdminUserDetail.jsx';
 import DonationManagement from './pages/DonationManagement.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import DashboardDetail from './pages/DashboardDetail.jsx';
+import CheckoutObject from './pages/CheckoutObject.jsx';
 
 // Estilos globales
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -41,6 +42,7 @@ function App() {
         <Route path="/register" element={<Register />} /> 
         <Route path="/profile" element={<Profile />} />
         <Route path="/checkout-payment" element={<CheckoutPayment />} />  
+        <Route path="/checkout-Object" element={<CheckoutObject />} />  
 
         {/*admin*/}
         <Route path="/admin/users" element={<AdminUsers />} />

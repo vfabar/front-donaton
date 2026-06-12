@@ -11,7 +11,7 @@ import Button from '../components/atoms/Button.jsx';
 const getPlaceholderImage = (type) => {
   const images = {
     'Comida': 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800',
-    'Salud': 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800',
+    'Salud': 'https://www.tubotiquin.cl/cdn/shop/articles/que-debe-tener-un-botiquin-de-primeros-auxilios_592e319d-c15b-4ad0-b408-ff0e87020015.webp?v=1780536762',
     'Refugio': 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?q=80&w=800',
     'Ropa': 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=800',
     'Agua e Higiene': 'https://cospec.com.ar/wp-content/uploads/2022/03/Dia-mundial-del-agua_-22-de-marzo-de-2022.jpg'
@@ -32,6 +32,8 @@ function ProductDetail() {
   const [tipoDonacion, setTipoDonacion] = useState("Monetario");
   const [detalleObjeto, setDetalleObjeto] = useState("");
 
+  const [selectedSubtype, setSelectedSubtype] = useState({ id: 2, name: "Ropa y Abrigo" });
+
   const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
@@ -47,6 +49,21 @@ function ProductDetail() {
     };
     fetchProduct();
   }, [id]);
+
+  // Manejador para actualizar el subtipo de objeto de acuerdo al Swagger
+  const handleSubtypeChange = (e) => {
+    const idType = parseInt(e.target.value);
+    const names = {
+      2: "Ropa y Abrigo",
+      3: "Alimentos",
+      4: "Insumos Médicos",
+      5: "Agua e Higiene"
+    };
+    setSelectedSubtype({
+      id: idType,
+      name: names[idType]
+    });
+  };
 
   const handleDonar = async () => {
     if (!user) {
@@ -71,14 +88,19 @@ function ProductDetail() {
       navigate('/checkout-payment', { 
         state: { 
           donationData: dataDonacion,
-          productName: product.needs 
+          productName: product.needs, 
+          idNeeds: product
         } 
       });
     } else {
     try {
-      await donationApi.create(dataDonacion);
-      alert(`¡Gracias! Donación de ${tipoDonacion} registrada.`);
-      navigate('/profile');
+      navigate('/checkout-object', {
+        state: {
+          donationData: dataDonacion,
+          productName: product.needs,
+          idNeeds: product
+        }
+      });
     } catch (error) {
       console.error("Error al donar:", error);
       alert("Error al procesar la donación.");
@@ -89,16 +111,17 @@ function ProductDetail() {
   if (loading) return <Container className="text-center py-5"><Spinner animation="border" variant="success" /></Container>;
   if (!product) return <Container className="py-5"><h1>Causa no encontrada</h1></Container>;
 
+
+  const estaSuperada = product.id_needs_state === 2; 
+  const stateText = product.NeedsState?.needsState || 'Sin estado';
+  const typeText = product.NeedsType?.needsType || 'General';
+  const cardImage = product.image || getPlaceholderImage(typeText);
+
   // Lógica de progreso y Bloqueo
   const meta = 1000 + (product.idNeeds * 100); 
-  const actual = product.idNeedsState.idNeedsState === 2 ? meta : 450 + (product.idNeeds * 50); 
+  const actual = estaSuperada ? meta : 450 + (product.idNeeds * 50); 
   const porcentaje = Math.round((actual / meta) * 100);
-  const estaSuperada = product.idNeedsState.idNeedsState === 2;
-
-  const type = product.idNeedsType?.needsType || 'General';
-  const cardImage = product.image || getPlaceholderImage(type);
-
-  return (
+return (
     <Container className="py-5">
       <Button variant="outline-dark" className="mb-4" onClick={() => navigate(-1)}>← Volver</Button>
       <Card className="border-0 shadow-lg overflow-hidden">
@@ -108,9 +131,9 @@ function ProductDetail() {
           </Col>
           <Col md={6}>
             <Card.Body className="p-4">
-              <Badge bg="success" className="me-2">{product.idNeedsType.needsType}</Badge>
+              <Badge bg="success" className="me-2">{typeText}</Badge>
               <Badge bg={estaSuperada ? "info" : "warning"} text="dark">
-                {product.idNeedsState.needsState}
+                {stateText}
               </Badge>
 
               <Text variant="h2" className="fw-bold mt-2 text-success">{product.needs}</Text>
@@ -119,27 +142,31 @@ function ProductDetail() {
                 <ProgressBar variant={estaSuperada ? "info" : "success"} now={porcentaje} label={`${porcentaje}%`} animated={!estaSuperada} />
                 <small className="text-muted">Meta: {meta} unidades / Recolectado: {actual}</small>
               </div>
-
-              {/* LÓGICA DE BLOQUEO */}
+              {/*    bloqueo.  */}
               {!estaSuperada ? (
                 <div className="donation-box p-3 border rounded bg-light">
                   <Form.Group className="mb-3">
                     <Form.Label className="fw-bold">¿Qué deseas donar?</Form.Label>
                     <Form.Select value={tipoDonacion} onChange={(e) => setTipoDonacion(e.target.value)}>
                       <option value="Monetario">Dinero (CLP)</option>
-                      <option value="Objeto">Objeto / Insumo</option>
+                      <option value="Objeto">Objeto / Insumo Físico</option>
                     </Form.Select>
                   </Form.Group>
 
                   {tipoDonacion === "Objeto" && (
                     <Form.Group className="mb-3">
-                      <Form.Label>¿Qué objeto es? (Ej: Manta, Botiquín)</Form.Label>
-                      <Form.Control type="text" placeholder="Nombre del objeto" value={detalleObjeto} onChange={(e) => setDetalleObjeto(e.target.value)} />
+                      <Form.Label className="fw-bold">Selecciona la categoría del Objeto</Form.Label>
+                      <Form.Select value={selectedSubtype.id} onChange={handleSubtypeChange}>
+                        <option value="2">Ropa y Abrigo</option>
+                        <option value="3">Alimentos</option>
+                        <option value="4">Insumos Médicos</option>
+                        <option value="5">Agua e Higiene</option>
+                      </Form.Select>
                     </Form.Group>
                   )}
 
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">Cantidad</Form.Label>
+                    <Form.Label className="fw-bold">Cantidad / Unidades</Form.Label>
                     <Form.Control type="number" min="1" value={cantidad} onChange={(e) => setCantidad(e.target.value)} />
                   </Form.Group>
 
